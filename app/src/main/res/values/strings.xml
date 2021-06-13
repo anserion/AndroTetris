@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AndroTetris</string>
+    <string name="tetris_lbl">Andro Tetris</string>
+    <string name="speed_lbl">Speed</string>
+    <string name="score_lbl">Score</string>
+    <string name="lines_lbl">Lines</string>
+    <string name="record_lbl">Record</string>
+</resources>
