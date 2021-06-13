@@ -13,6 +13,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
+    RecordDataHelper recordDBconnector;
+
     final int[] score_rules={0,100,300,700,1500};
 
     final static Point[][] tetramino_base = {
@@ -236,6 +238,9 @@ class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Run
     public GameSurfaceView(Context context) {
         super(context);
 
+        recordDBconnector = new RecordDataHelper(context);
+        record_score=recordDBconnector.select();
+
         score=0;
         lines_total=0;
         bg_idx=(int) (Math.random()*10);
@@ -335,7 +340,10 @@ class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Run
                     int lines_fit=filledLinesSearch();
                     lines_total=lines_total+lines_fit;
                     score=score+score_rules[lines_fit];
-                    if (score>record_score) record_score=score;
+                    if (score>record_score) {
+                        record_score=score;
+                        recordDBconnector.update(record_score);
+                    }
                 }
 
                 Paint bitmap_paint=new Paint();

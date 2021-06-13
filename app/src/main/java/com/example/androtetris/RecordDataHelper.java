@@ -24,20 +24,14 @@ public class RecordDataHelper {
         db = openHelper.getWritableDatabase();
     }
 
-    public long insert(int record) {
-        ContentValues cv=new ContentValues();
-        cv.put(COLUMN_RECORD, record);
-        return db.insert(TABLE_NAME, null, cv);
-    }
-
     public int update(int record) {
         ContentValues cv=new ContentValues();
         cv.put(COLUMN_RECORD, record);
-        return db.update(TABLE_NAME, cv, COLUMN_ID + " = ?",new String[] { String.valueOf(record)});
+        return db.update(TABLE_NAME, cv, null,null);
     }
 
-    public int select(long id) {
-        Cursor cursor = db.query(TABLE_NAME, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
+    public int select() {
+        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
         cursor.moveToFirst();
         return cursor.getInt(NUM_COLUMN_RECORD);
     }
@@ -53,6 +47,8 @@ public class RecordDataHelper {
             String query = "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_RECORD + " INTEGER); ";
+            db.execSQL(query);
+            query = "INSERT INTO " + TABLE_NAME + " (" + COLUMN_RECORD + ") VALUES (0)";
             db.execSQL(query);
         }
 
