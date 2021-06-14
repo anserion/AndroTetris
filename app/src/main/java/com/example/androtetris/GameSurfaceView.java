@@ -8,9 +8,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.example.androtetris.WeatherRestHelper.CITY_NAME;
+import static com.example.androtetris.WeatherRestHelper.KEY;
 
 class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
     RecordDataHelper recordDBconnector;
@@ -62,6 +70,10 @@ class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Run
     static String record_lbl;
     static String lines_lbl;
     static String speed_lbl;
+
+    WeatherRestHelper.ApiInterface weatherApi;
+    static String temperature_lbl;
+    static String stv_temp;
 
     static Bitmap[] bg_bitmap=new Bitmap[10];
 
@@ -233,10 +245,28 @@ class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Run
         canvas.drawText(lines_lbl+" "+lines_total,sx,3*sy+4*dy,paint);
         canvas.drawText(speed_lbl+" "+speed_cnt_inc,sx,3*sy+6*dy,paint);
         canvas.drawText(record_lbl+" "+record_score,sx,3*sy+8*dy,paint);
+        canvas.drawText(temperature_lbl+" "+stv_temp,sx,3*sy+10*dy,paint);
     }
     //==================================================================================
     public GameSurfaceView(Context context) {
         super(context);
+
+        weatherApi = WeatherRestHelper.apiClient().create(WeatherRestHelper.ApiInterface.class);
+        Call<WeatherToday> callWeatherToday = weatherApi.getWeatherToday(CITY_NAME, KEY);
+        callWeatherToday.enqueue(new Callback<WeatherToday>() {
+            @Override
+            public void onResponse(Call<WeatherToday> call, Response<WeatherToday> response) {
+                WeatherToday data = response.body();
+                if (response.isSuccessful()) stv_temp=data.getTempWithDegree();
+                else Log.e("WEATHER", "response onResponse not succsess");
+            }
+            @Override
+            public void onFailure(Call<WeatherToday> call, Throwable t) {
+                stv_temp="Err";
+                Log.e("WEATHER", "onFailure");
+                Log.e("WEATHER", t.toString());
+            }
+        });
 
         recordDBconnector = new RecordDataHelper(context);
         record_score=recordDBconnector.select();
@@ -266,6 +296,7 @@ class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Run
         speed_lbl =  getResources().getString(R.string.speed_lbl);
         lines_lbl =  getResources().getString(R.string.lines_lbl);
         record_lbl =  getResources().getString(R.string.record_lbl);
+        temperature_lbl = getResources().getString(R.string.temperature_lbl);
 
         bg_bitmap[0]= BitmapFactory.decodeResource(getResources(), R.drawable.bg0);
         bg_bitmap[1]= BitmapFactory.decodeResource(getResources(), R.drawable.bg1);

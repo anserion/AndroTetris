@@ -1,3 +1,6 @@
+//===============================================
+// SQLite interaction routines for ITSchool pleasure
+//===============================================
 package com.example.androtetris;
 
 import android.content.ContentValues;

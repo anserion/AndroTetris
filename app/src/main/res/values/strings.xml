@@ -5,4 +5,5 @@
     <string name="score_lbl">Score</string>
     <string name="lines_lbl">Lines</string>
     <string name="record_lbl">Record</string>
+    <string name="temperature_lbl">STV_temp</string>
 </resources>
